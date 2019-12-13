@@ -9,10 +9,6 @@ const CameraHandler = () => {
     <Suspense fallback={<div>Loading...</div>}>
       <Video />
     </Suspense>
-    <div>
-      <p>Cannot scan? Type your product barcode below</p>
-      <BarcodeInputField />
-    </div>
   </div>
 }
 
