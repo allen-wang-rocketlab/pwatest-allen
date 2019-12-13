@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { BrowserQRCodeReader } from "@zxing/library";
+import { BrowserQRCodeReader, NotFoundException } from "@zxing/library";
 
 import VideoSkeleton from "./Video.skeleton";
 
@@ -56,56 +56,59 @@ const Video = () => {
   //     Quagga.onDetected(onDetected);
   //   }
   // }, []);
-
-  let selectedDeviceId;
-  const codeReader = new BrowserQRCodeReader();
-  console.log("ZXing code reader initialized");
-  codeReader
-    .getVideoInputDevices()
-    .then(videoInputDevices => {
-      const sourceSelect = document.getElementById("sourceSelect");
-      selectedDeviceId = videoInputDevices[0].deviceId;
-      if (videoInputDevices.length >= 1) {
-        videoInputDevices.forEach(element => {
-          const sourceOption = document.createElement("option");
-          sourceOption.text = element.label;
-          sourceOption.value = element.deviceId;
-          sourceSelect.appendChild(sourceOption);
-        });
-        sourceSelect.onchange = () => {
-          selectedDeviceId = sourceSelect.value;
-        };
-        const sourceSelectPanel = document.getElementById("sourceSelectPanel");
-        sourceSelectPanel.style.display = "block";
-      }
-      document.getElementById("startButton").addEventListener("click", () => {
-        codeReader.decodeFromVideoDevice(
-          selectedDeviceId,
-          "video",
-          (result, err) => {
-            if (result) {
-              console.log(result);
-              document.getElementById("result").textContent = result.text;
+  useEffect(() => {
+    let selectedDeviceId;
+    const codeReader = new BrowserQRCodeReader();
+    console.log("ZXing code reader initialized");
+    codeReader
+      .getVideoInputDevices()
+      .then(videoInputDevices => {
+        const sourceSelect = document.getElementById("sourceSelect");
+        selectedDeviceId = videoInputDevices[0].deviceId;
+        if (videoInputDevices.length >= 1) {
+          videoInputDevices.forEach(element => {
+            const sourceOption = document.createElement("option");
+            sourceOption.text = element.label;
+            sourceOption.value = element.deviceId;
+            sourceSelect.appendChild(sourceOption);
+          });
+          sourceSelect.onchange = () => {
+            selectedDeviceId = sourceSelect.value;
+          };
+          const sourceSelectPanel = document.getElementById(
+            "sourceSelectPanel"
+          );
+          sourceSelectPanel.style.display = "block";
+        }
+        document.getElementById("startButton").addEventListener("click", () => {
+          codeReader.decodeFromVideoDevice(
+            selectedDeviceId,
+            "video",
+            (result, err) => {
+              if (result) {
+                console.log(result);
+                document.getElementById("result").textContent = result.text;
+              }
+              if (err && !(err instanceof NotFoundException)) {
+                console.error(err);
+                document.getElementById("result").textContent = err;
+              }
             }
-            // if (err && !(err instanceof ZXing.NotFoundException)) {
-            //   console.error(err);
-            //   document.getElementById("result").textContent = err;
-            // }
-          }
-        );
-        console.log(
-          `Started continous decode from camera with id ${selectedDeviceId}`
-        );
+          );
+          console.log(
+            `Started continous decode from camera with id ${selectedDeviceId}`
+          );
+        });
+        document.getElementById("resetButton").addEventListener("click", () => {
+          codeReader.reset();
+          document.getElementById("result").textContent = "";
+          console.log("Reset.");
+        });
+      })
+      .catch(err => {
+        console.error(err);
       });
-      document.getElementById("resetButton").addEventListener("click", () => {
-        codeReader.reset();
-        document.getElementById("result").textContent = "";
-        console.log("Reset.");
-      });
-    })
-    .catch(err => {
-      console.error(err);
-    });
+  }, []);
 
   return (
     <div>
@@ -113,32 +116,28 @@ const Video = () => {
         <h1 className="title">Scan a product</h1>
 
         <div>
-          <button id="startButton">
-            Start
-          </button>
-          <button id="resetButton">
-            Reset
-          </button>
+          <button id="startButton">Start</button>
+          <button id="resetButton">Reset</button>
         </div>
 
         <div>
           <video
             id="video"
-            width="300"
-            height="200"
-            style={{border: "1px solid gray"}}
+            width="100%"
+            height="auto"
+            style={{ border: "1px solid gray" }}
           ></video>
         </div>
 
-        <div id="sourceSelectPanel" style={{display: "none"}}>
+        <div id="sourceSelectPanel" style={{ display: "none" }}>
           <label htmlFor="sourceSelect">Change video source:</label>
-          <select id="sourceSelect" style={{maxWidth: "400px"}}></select>
+          <select id="sourceSelect" style={{ maxWidth: "400px" }}></select>
         </div>
 
         <label>Result:</label>
-        <pre>
-          <code id="result"></code>
-        </pre>
+        <div>
+          <label id="result"></label>
+        </div>
       </div>
     </div>
   );
