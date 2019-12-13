@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { BrowserQRCodeReader, NotFoundException } from "@zxing/library";
+import { BrowserMultiFormatReader, NotFoundException } from "@zxing/library";
 
 import VideoSkeleton from "./Video.skeleton";
 
@@ -58,7 +58,7 @@ const Video = () => {
   // }, []);
   useEffect(() => {
     let selectedDeviceId;
-    const codeReader = new BrowserQRCodeReader();
+    const codeReader = new BrowserMultiFormatReader();
     console.log("ZXing code reader initialized");
     codeReader
       .getVideoInputDevices()
