@@ -1,61 +1,8 @@
-import React, { useState, useEffect } from "react";
+import "./Video.css";
+import React, { useEffect } from "react";
 import { BrowserMultiFormatReader, NotFoundException } from "@zxing/library";
 
-import VideoSkeleton from "./Video.skeleton";
-
 const Video = () => {
-  const [videoInit, setVideoInit] = useState(false);
-  const [videoError, setVideoError] = useState(false);
-  const [barcode, setBarcode] = useState(null);
-  const [cameraFacingUser, setCameraFacingUser] = useState(true);
-
-  // const onInitSuccess = () => {
-  //   Quagga.start();
-  //   setVideoInit(true);
-  // }
-
-  // const onDetected = (result) => {
-  //   Quagga.offDetected(onDetected);
-  //   setBarcode(result.codeResult.code);
-  //   // do the API stuff
-  // }
-
-  // const switchCameraHandler = () => {
-  //   Quagga.pause();
-  //   setCameraFacingUser(!cameraFacingUser);
-  //   Quagga.start();
-  //   setVideoInit(true);
-  //   console.log(cameraFacingUser)
-  // }
-
-  // useEffect(() => {
-  //   if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-  //     Quagga.init({
-  //       inputStream: {
-  //         name: "Live",
-  //         type: "LiveStream",
-  //         target: document.querySelector('#video'),
-  //         constraints: {
-  //           width: 900,
-  //           height: 300,
-  //           facingMode: cameraFacingUser ? "user" : "environment"
-  //         }
-  //       },
-  //       numOfWorkers: 1,
-  //       locate: true,
-  //       decoder: {
-  //         readers: ['ean_reader', 'ean_8_reader', 'upc_reader', 'code_128_reader']
-  //       }
-  //     }, (err) => {
-  //       if (err) {
-  //         setVideoError(true);
-  //         return;
-  //       }
-  //       onInitSuccess();
-  //     });
-  //     Quagga.onDetected(onDetected);
-  //   }
-  // }, []);
   useEffect(() => {
     let selectedDeviceId;
     const codeReader = new BrowserMultiFormatReader();
@@ -116,27 +63,38 @@ const Video = () => {
         <h1 className="title">Scan a product</h1>
 
         <div>
-          <button id="startButton">Start</button>
-          <button id="resetButton">Reset</button>
-        </div>
-
-        <div>
-          <video
-            id="video"
-            width="100%"
-            height="auto"
-            style={{ border: "1px solid gray" }}
-          ></video>
+          <button id="startButton" className="actionButton">
+            Start
+          </button>
+          <button id="resetButton" className="actionButton">
+            Reset
+          </button>
         </div>
 
         <div id="sourceSelectPanel" style={{ display: "none" }}>
-          <label htmlFor="sourceSelect">Change video source:</label>
-          <select id="sourceSelect" style={{ maxWidth: "400px" }}></select>
+          <label htmlFor="sourceSelect" className="sourceSelect">
+            Change video source:
+          </label>
+          <select
+            id="sourceSelect"
+            className="sourceSelect"
+            style={{ maxWidth: "400px" }}
+          ></select>
         </div>
 
-        <label>Result:</label>
+        <div className="resultOutput">
+          <label>Result:</label>
+          <div>
+            <label id="result"></label>
+          </div>
+        </div>
         <div>
-          <label id="result"></label>
+          <video
+            id="video"
+            width="70%"
+            height="auto"
+            style={{ border: "1px solid gray" }}
+          ></video>
         </div>
       </div>
     </div>
