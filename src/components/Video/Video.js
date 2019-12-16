@@ -28,7 +28,7 @@ const Video = () => {
           sourceSelectPanel.style.display = "block";
         }
         document.getElementById("startButton").addEventListener("click", () => {
-          codeReader.decodeFromVideoDevice(
+          codeReader.decodeFromInputVideoDeviceContinuously(
             selectedDeviceId,
             "video",
             (result, err) => {
